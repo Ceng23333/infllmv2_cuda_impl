@@ -1,3 +1,4 @@
 [submodule "csrc/cutlass"]
 	path = csrc/cutlass
-	url = https://github.com/NVIDIA/cutlass.git
+	url = https://github.com/Ceng23333/cutlass.git
+	branch = minicpm_sala_pfn_alias_fix_zhangyan
