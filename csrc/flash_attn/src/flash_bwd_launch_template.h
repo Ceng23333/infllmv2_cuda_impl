@@ -93,8 +93,8 @@ void run_flash_bwd_seqk_parallel(Flash_bwd_params &params, cudaStream_t stream) 
     // printf("smem_size_dq_dk_dv = %d\n", smem_size_dq_dk_dv);
     BOOL_SWITCH(is_even_MN, IsEvenMNConst, [&] {
         EVENK_SWITCH(is_even_K, IsEvenKConst, [&] {
-            // LOCAL_SWITCH((params.window_size_left >= 0 || params.window_size_right >= 0) && !params.is_causal, Is_local, [&] {
-            constexpr static bool Is_local = false;{
+            LOCAL_SWITCH((params.window_size_left >= 0 || params.window_size_right >= 0) && !params.is_causal, Is_local, [&] {
+                // Is_local selected by LOCAL_SWITCH.
                 // ALIBI_SWITCH(params.alibi_slopes_ptr != nullptr, Has_alibi, [&] {
                 constexpr static bool Has_alibi = false;{
                     // SOFTCAP_SWITCH(params.softcap > 0.0, Is_softcap, [&] {
@@ -112,7 +112,7 @@ void run_flash_bwd_seqk_parallel(Flash_bwd_params &params, cudaStream_t stream) 
                         C10_CUDA_KERNEL_LAUNCH_CHECK();
                     };
                 };
-            };
+            });
         });
     });
 

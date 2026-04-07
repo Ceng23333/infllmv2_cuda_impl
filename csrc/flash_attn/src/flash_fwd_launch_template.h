@@ -72,8 +72,8 @@ void run_flash_fwd(Flash_fwd_params &params, cudaStream_t stream) {
     // const bool return_softmax = params.p_ptr != nullptr;
     BOOL_SWITCH(is_even_MN, IsEvenMNConst, [&] {
         EVENK_SWITCH(is_even_K, IsEvenKConst, [&] {
-            // LOCAL_SWITCH((params.window_size_left >= 0 || params.window_size_right >= 0) && !Is_causal, Is_local, [&] {
-            constexpr static bool Is_local = false; { // TODO remove debug info
+            LOCAL_SWITCH((params.window_size_left >= 0 || params.window_size_right >= 0) && !Is_causal, Is_local, [&] {
+                // Is_local selected by LOCAL_SWITCH.
                 // BOOL_SWITCH(return_softmax, ReturnSoftmaxConst, [&] {
                 constexpr static bool ReturnSoftmaxConst = false; { // TODO remove debug info
                     // ALIBI_SWITCH(params.alibi_slopes_ptr != nullptr, Has_alibi, [&] {
@@ -102,7 +102,7 @@ void run_flash_fwd(Flash_fwd_params &params, cudaStream_t stream) {
                         }
                     }
                 }
-            }
+            });
         });
     });
 }
@@ -118,8 +118,8 @@ void run_flash_splitkv_fwd(Flash_fwd_params &params, cudaStream_t stream) {
     const bool is_even_K = params.d == Kernel_traits::kHeadDim;
     BOOL_SWITCH(is_even_MN, IsEvenMNConst, [&] {
         EVENK_SWITCH(is_even_K, IsEvenKConst, [&] {
-            // LOCAL_SWITCH((params.window_size_left >= 0 || params.window_size_right >= 0) && !Is_causal, Is_local, [&] {
-            constexpr static bool Is_local = false; { // TODO remove debug info
+            LOCAL_SWITCH((params.window_size_left >= 0 || params.window_size_right >= 0) && !Is_causal, Is_local, [&] {
+                // Is_local selected by LOCAL_SWITCH.
                 BOOL_SWITCH(params.num_splits > 1, Split, [&] {
                     BOOL_SWITCH(params.knew_ptr != nullptr, Append_KV, [&] {
                         // ALIBI_SWITCH(params.alibi_slopes_ptr != nullptr, Has_alibi, [&] {
@@ -142,7 +142,7 @@ void run_flash_splitkv_fwd(Flash_fwd_params &params, cudaStream_t stream) {
                         }
                     });
                 });
-            }
+            });
         });
     });
     if (params.num_splits > 1) {
@@ -183,8 +183,8 @@ void run_flash_splitkv_fwd_stage1(Flash_fwd_params &params, cudaStream_t stream)
     const bool is_even_K = params.d == Kernel_traits::kHeadDim;
     BOOL_SWITCH(is_even_MN, IsEvenMNConst, [&] {
         EVENK_SWITCH(is_even_K, IsEvenKConst, [&] {
-            // LOCAL_SWITCH((params.window_size_left >= 0 || params.window_size_right >= 0) && !Is_causal, Is_local, [&] {
-            constexpr static bool Is_local = false; { // TODO remove debug info
+            LOCAL_SWITCH((params.window_size_left >= 0 || params.window_size_right >= 0) && !Is_causal, Is_local, [&] {
+                // Is_local selected by LOCAL_SWITCH.
                 // BOOL_SWITCH(params.num_splits > 1, Split, [&] {
                 constexpr static bool Split = false; { // TODO remove debug info
                     // BOOL_SWITCH(params.knew_ptr != nullptr, Append_KV, [&] {
@@ -207,7 +207,7 @@ void run_flash_splitkv_fwd_stage1(Flash_fwd_params &params, cudaStream_t stream)
                         }
                     }
                 }
-            }
+            });
         });
     });
 }
